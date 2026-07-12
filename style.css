@@ -15,6 +15,7 @@
     --text-muted: #8e8ea8;
     --font-retro: 'Press Start 2P', monospace;
     --font-modern: 'Noto Sans JP', sans-serif;
+    --game-scale: 1; /* Dynamic scale factor set via JS */
 }
 
 * {
@@ -149,13 +150,13 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 60px;
+    height: calc(60px * var(--game-scale, 1));
     background: linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
     display: flex;
     justify-content: space-around;
     align-items: center;
     z-index: 10;
-    padding: 0 20px;
+    padding: 0 calc(20px * var(--game-scale, 1));
     pointer-events: none; /* Let clicks pass through to game */
 }
 
@@ -166,19 +167,19 @@ body {
 }
 
 .hud-label {
-    font-size: 0.65rem;
+    font-size: calc(0.65rem * var(--game-scale, 1));
     font-weight: bold;
     color: var(--text-muted);
-    margin-bottom: 4px;
+    margin-bottom: calc(4px * var(--game-scale, 1));
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
 .hud-value {
     font-family: var(--font-retro);
-    font-size: 0.85rem;
+    font-size: calc(0.85rem * var(--game-scale, 1));
     color: var(--neon-blue);
-    text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
+    text-shadow: 0 0 calc(5px * var(--game-scale, 1)) rgba(0, 240, 255, 0.5);
 }
 
 /* Screen Overlays */
@@ -207,14 +208,14 @@ body {
 
 .overlay-content {
     background: var(--panel-bg);
-    border: 2px solid var(--border-color);
-    border-radius: 16px;
-    padding: 30px 40px;
-    max-width: 500px;
+    border: calc(2px * var(--game-scale, 1)) solid var(--border-color);
+    border-radius: calc(16px * var(--game-scale, 1));
+    padding: calc(20px * var(--game-scale, 1)) calc(30px * var(--game-scale, 1));
+    max-width: calc(500px * var(--game-scale, 1));
     width: 90%;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px rgba(0, 240, 255, 0.15);
-    transform: translateY(20px);
+    box-shadow: 0 calc(10px * var(--game-scale, 1)) calc(30px * var(--game-scale, 1)) rgba(0,0,0,0.5), 0 0 calc(15px * var(--game-scale, 1)) rgba(0, 240, 255, 0.15);
+    transform: translateY(calc(20px * var(--game-scale, 1)));
     transition: transform 0.3s ease;
 }
 
@@ -224,55 +225,55 @@ body {
 
 .overlay h2 {
     font-family: var(--font-retro);
-    font-size: 1.5rem;
-    margin-bottom: 15px;
+    font-size: calc(1.3rem * var(--game-scale, 1));
+    margin-bottom: calc(12px * var(--game-scale, 1));
     letter-spacing: 1px;
 }
 
 .neon-text {
     color: var(--neon-blue);
-    text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+    text-shadow: 0 0 calc(8px * var(--game-scale, 1)) rgba(0, 240, 255, 0.6);
 }
 
 .neon-text.text-red {
     color: var(--neon-red);
-    text-shadow: 0 0 8px rgba(255, 51, 51, 0.6);
+    text-shadow: 0 0 calc(8px * var(--game-scale, 1)) rgba(255, 51, 51, 0.6);
 }
 
 .neon-text.text-gold {
     color: var(--neon-gold);
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    text-shadow: 0 0 calc(8px * var(--game-scale, 1)) rgba(255, 215, 0, 0.6);
 }
 
 .overlay p.description {
-    font-size: 0.9rem;
+    font-size: calc(0.85rem * var(--game-scale, 1));
     color: var(--text-muted);
     line-height: 1.5;
-    margin-bottom: 20px;
+    margin-bottom: calc(15px * var(--game-scale, 1));
 }
 
 /* Control Guide */
 .control-guide {
     background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 25px;
+    border-radius: calc(8px * var(--game-scale, 1));
+    padding: calc(12px * var(--game-scale, 1));
+    margin-bottom: calc(15px * var(--game-scale, 1));
     text-align: left;
 }
 
 .control-guide h3 {
-    font-size: 0.85rem;
+    font-size: calc(0.8rem * var(--game-scale, 1));
     color: var(--neon-pink);
-    margin-bottom: 10px;
-    border-bottom: 1px solid rgba(255, 0, 127, 0.2);
-    padding-bottom: 5px;
+    margin-bottom: calc(8px * var(--game-scale, 1));
+    border-bottom: calc(1px * var(--game-scale, 1)) solid rgba(255, 0, 127, 0.2);
+    padding-bottom: calc(4px * var(--game-scale, 1));
 }
 
 .guide-grid {
     display: grid;
-    grid-template-columns: 100px 1fr;
-    row-gap: 8px;
-    font-size: 0.8rem;
+    grid-template-columns: calc(100px * var(--game-scale, 1)) 1fr;
+    row-gap: calc(6px * var(--game-scale, 1));
+    font-size: calc(0.75rem * var(--game-scale, 1));
     color: var(--text-color);
 }
 
@@ -284,10 +285,10 @@ body {
 /* Score Breakdown */
 .score-breakdown {
     background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 25px;
-    font-size: 0.95rem;
+    border-radius: calc(8px * var(--game-scale, 1));
+    padding: calc(12px * var(--game-scale, 1));
+    margin-bottom: calc(15px * var(--game-scale, 1));
+    font-size: calc(0.85rem * var(--game-scale, 1));
     color: var(--text-color);
     line-height: 1.8;
 }
@@ -300,60 +301,60 @@ body {
 /* Arcade Buttons */
 .arcade-btn {
     font-family: var(--font-retro);
-    font-size: 0.9rem;
+    font-size: calc(0.85rem * var(--game-scale, 1));
     color: #fff;
     background: linear-gradient(135deg, #005f73 0%, #008f8f 100%);
-    border: 2px solid var(--neon-blue);
-    border-radius: 30px;
-    padding: 12px 35px;
+    border: calc(2px * var(--game-scale, 1)) solid var(--neon-blue);
+    border-radius: calc(30px * var(--game-scale, 1));
+    padding: calc(10px * var(--game-scale, 1)) calc(28px * var(--game-scale, 1));
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 240, 255, 0.2);
+    box-shadow: 0 calc(4px * var(--game-scale, 1)) calc(10px * var(--game-scale, 1)) rgba(0, 240, 255, 0.2);
     transition: all 0.2s ease;
     outline: none;
 }
 
 .arcade-btn:hover {
     background: linear-gradient(135deg, #008f8f 0%, #00f0ff 100%);
-    box-shadow: 0 6px 15px rgba(0, 240, 255, 0.4);
+    box-shadow: 0 calc(6px * var(--game-scale, 1)) calc(15px * var(--game-scale, 1)) rgba(0, 240, 255, 0.4);
     transform: translateY(-2px);
 }
 
 .arcade-btn:active {
     transform: translateY(1px);
-    box-shadow: 0 2px 5px rgba(0, 240, 255, 0.2);
+    box-shadow: 0 calc(2px * var(--game-scale, 1)) calc(5px * var(--game-scale, 1)) rgba(0, 240, 255, 0.2);
 }
 
 .arcade-btn.btn-red {
     background: linear-gradient(135deg, #780000 0%, #c1121f 100%);
     border-color: var(--neon-red);
-    box-shadow: 0 4px 10px rgba(255, 51, 51, 0.2);
+    box-shadow: 0 calc(4px * var(--game-scale, 1)) calc(10px * var(--game-scale, 1)) rgba(255, 51, 51, 0.2);
 }
 
 .arcade-btn.btn-red:hover {
     background: linear-gradient(135deg, #c1121f 0%, #ff3333 100%);
-    box-shadow: 0 6px 15px rgba(255, 51, 51, 0.4);
+    box-shadow: 0 calc(6px * var(--game-scale, 1)) calc(15px * var(--game-scale, 1)) rgba(255, 51, 51, 0.4);
 }
 
 .arcade-btn.btn-gold {
     background: linear-gradient(135deg, #9a7d0a 0%, #f1c40f 100%);
     border-color: var(--neon-gold);
-    box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2);
+    box-shadow: 0 calc(4px * var(--game-scale, 1)) calc(10px * var(--game-scale, 1)) rgba(255, 215, 0, 0.2);
 }
 
 .arcade-btn.btn-gold:hover {
     background: linear-gradient(135deg, #f1c40f 0%, #f4d03f 100%);
-    box-shadow: 0 6px 15px rgba(255, 215, 0, 0.4);
+    box-shadow: 0 calc(6px * var(--game-scale, 1)) calc(15px * var(--game-scale, 1)) rgba(255, 215, 0, 0.4);
 }
 
 .arcade-btn.btn-grey {
     background: linear-gradient(135deg, #3a3a4c 0%, #5d5d76 100%);
     border-color: #888899;
-    box-shadow: 0 4px 10px rgba(136, 136, 153, 0.2);
+    box-shadow: 0 calc(4px * var(--game-scale, 1)) calc(10px * var(--game-scale, 1)) rgba(136, 136, 153, 0.2);
 }
 
 .arcade-btn.btn-grey:hover {
     background: linear-gradient(135deg, #5d5d76 0%, #888899 100%);
-    box-shadow: 0 6px 15px rgba(136, 136, 153, 0.4);
+    box-shadow: 0 calc(6px * var(--game-scale, 1)) calc(15px * var(--game-scale, 1)) rgba(136, 136, 153, 0.4);
 }
 
 /* Options Bar */
@@ -390,6 +391,7 @@ body {
     justify-content: space-between;
     padding: 15px 10px;
     margin-top: 10px;
+    box-sizing: border-box;
 }
 
 /* Show touch controls on mobile or touch pointer devices */
@@ -403,6 +405,62 @@ body {
         height: auto;
         aspect-ratio: 5 / 3;
     }
+
+    /* Portrait (Vertical orientation) */
+    @media (orientation: portrait) {
+        #touch-controls {
+            display: flex;
+            position: static;
+            width: 100%;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 0 15px;
+        }
+    }
+
+    /* Landscape (Horizontal orientation) */
+    @media (orientation: landscape) {
+        #touch-controls {
+            display: flex;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Let canvas handle pointer clicks underneath */
+            z-index: 30; /* Keep overlay buttons on top */
+            padding: 0;
+            margin: 0;
+            justify-content: space-between;
+            align-items: flex-end;
+            box-sizing: border-box;
+        }
+
+        .dpad {
+            pointer-events: auto; /* Re-enable pointer events for controls */
+            position: absolute;
+            left: 6vw;
+            bottom: 8vh;
+        }
+
+        .action-buttons {
+            pointer-events: auto; /* Re-enable pointer events for controls */
+            position: absolute;
+            right: 6vw;
+            bottom: 8vh;
+        }
+
+        /* Hide desktop options, header and footer on Landscape mobile for maximum view size */
+        .game-header, .game-footer, .options-bar {
+            display: none !important;
+        }
+
+        #app-container {
+            padding: 0;
+            justify-content: center;
+            height: 100vh;
+        }
+    }
 }
 
 .dpad, .action-buttons {
@@ -411,13 +469,17 @@ body {
 }
 
 .touch-btn {
-    width: 65px;
-    height: 65px;
+    width: calc(65px * var(--game-scale, 1));
+    height: calc(65px * var(--game-scale, 1));
+    min-width: 50px;
+    min-height: 50px;
+    max-width: 85px;
+    max-height: 85px;
     border-radius: 50%;
-    background-color: rgba(22, 22, 37, 0.7);
-    border: 2px solid var(--border-color);
+    background-color: rgba(22, 22, 37, 0.75);
+    border: calc(2px * var(--game-scale, 1)) solid var(--border-color);
     color: #fff;
-    font-size: 1.3rem;
+    font-size: calc(1.2rem * var(--game-scale, 1));
     font-weight: bold;
     display: flex;
     justify-content: center;
@@ -425,13 +487,32 @@ body {
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     touch-action: manipulation;
-    transition: background-color 0.1s, border-color 0.1s;
+    transition: background-color 0.1s, border-color 0.1s, transform 0.1s;
 }
 
 .touch-btn:active {
     background-color: rgba(0, 240, 255, 0.3);
     border-color: var(--neon-blue);
-    transform: scale(0.95);
+    transform: scale(0.92);
+}
+
+/* Enhancements specifically for touch screens in landscape */
+@media (pointer: coarse) and (orientation: landscape) {
+    .touch-btn {
+        width: 75px;
+        height: 75px;
+        font-size: 1.4rem;
+        background-color: rgba(22, 22, 37, 0.45); /* More see-through */
+        border: 2px solid rgba(255, 255, 255, 0.25);
+    }
+    .action-btn-x {
+        background-color: rgba(255, 0, 127, 0.3);
+        border-color: rgba(255, 0, 127, 0.4);
+    }
+    .action-btn-a {
+        background-color: rgba(0, 240, 255, 0.3);
+        border-color: rgba(0, 240, 255, 0.4);
+    }
 }
 
 .action-btn-x {

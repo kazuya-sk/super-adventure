@@ -1429,6 +1429,11 @@ class GameEngine {
         this.gameState = 'start';
         this.setupMenuHandlers();
         
+        // Dynamic resizing initialization & listeners
+        this.resizeGame();
+        window.addEventListener('resize', () => this.resizeGame());
+        window.addEventListener('orientationchange', () => this.resizeGame());
+        
         // Game Loop parameters
         let lastTime = 0;
         const tickRate = 1000 / 60; // Fixed 60fps update
@@ -1886,6 +1891,73 @@ class GameEngine {
                 }
             });
         }
+    }
+
+    resizeGame() {
+        const wrapper = document.getElementById('game-wrapper');
+        if (!wrapper) return;
+
+        const baseWidth = 800;
+        const baseHeight = 480;
+        const aspectRatio = baseWidth / baseHeight;
+
+        // Get window dimensions
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        // Detect if mobile (touch-enabled or narrow viewport)
+        const isMobile = windowWidth <= 820 || ('ontouchstart' in window);
+
+        let targetWidth, targetHeight;
+
+        if (isMobile) {
+            const isLandscape = windowWidth > windowHeight;
+            
+            if (isLandscape) {
+                // Landscape (horizontal orientation on phones)
+                const maxHeight = windowHeight - 10; // Keep minor safety margins
+                targetHeight = Math.min(baseHeight, maxHeight);
+                targetWidth = targetHeight * aspectRatio;
+                
+                // Fallback check if calculated width exceeds window width
+                if (targetWidth > windowWidth * 0.95) {
+                    targetWidth = windowWidth * 0.95;
+                    targetHeight = targetWidth / aspectRatio;
+                }
+            } else {
+                // Portrait (vertical orientation on phones)
+                const maxWidth = windowWidth * 0.95;
+                targetWidth = Math.min(baseWidth, maxWidth);
+                targetHeight = targetWidth / aspectRatio;
+                
+                // Set boundary to ensure touch controls below fit on portrait screens
+                const maxHeight = windowHeight * 0.5; // limit canvas height to 50%
+                if (targetHeight > maxHeight) {
+                    targetHeight = maxHeight;
+                    targetWidth = targetHeight * aspectRatio;
+                }
+            }
+        } else {
+            // Desktop resizing boundaries (preserve space for headers/footers)
+            const maxWidth = Math.min(960, windowWidth * 0.95);
+            const maxHeight = windowHeight * 0.7; // 70% viewport height boundary
+            
+            targetWidth = maxWidth;
+            targetHeight = targetWidth / aspectRatio;
+            
+            if (targetHeight > maxHeight) {
+                targetHeight = maxHeight;
+                targetWidth = targetHeight * aspectRatio;
+            }
+        }
+
+        // Apply style width and height
+        wrapper.style.width = `${Math.floor(targetWidth)}px`;
+        wrapper.style.height = `${Math.floor(targetHeight)}px`;
+
+        // Update the custom game-scale CSS variable based on calculated width / base width
+        const scale = targetWidth / baseWidth;
+        document.documentElement.style.setProperty('--game-scale', scale);
     }
 
     // ==========================================
