@@ -567,7 +567,7 @@ class Player {
         this.resolveCollisions('vertical');
 
         // Check if fallen out of map
-        if (this.y > 480 + 100) {
+        if (this.y > game.canvas.height + 100) {
             this.die();
         }
 
@@ -1483,12 +1483,12 @@ class GameEngine {
 
         this.player.update();
 
-        // Update camera position to follow player smoothly
-        const targetCamX = this.player.x - 300;
+        // Update camera position to follow player smoothly (center dynamically depending on width)
+        const targetCamX = this.player.x - (this.canvas.width / 2 - this.player.width / 2);
         this.cameraX += (targetCamX - this.cameraX) * 0.1;
         // Keep camera bounds
         if (this.cameraX < 0) this.cameraX = 0;
-        if (this.cameraX > this.levelWidth - 800) this.cameraX = this.levelWidth - 800;
+        if (this.cameraX > this.levelWidth - this.canvas.width) this.cameraX = this.levelWidth - this.canvas.width;
 
         // Update block bounces
         this.bouncingBlocks.forEach((block, idx) => {
@@ -1897,9 +1897,7 @@ class GameEngine {
         const wrapper = document.getElementById('game-wrapper');
         if (!wrapper) return;
 
-        const baseWidth = 800;
-        const baseHeight = 480;
-        const aspectRatio = baseWidth / baseHeight;
+        const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
 
         // Get window dimensions
         const windowWidth = window.innerWidth;
@@ -1908,9 +1906,39 @@ class GameEngine {
         // Detect if mobile (touch-enabled or narrow viewport)
         const isMobile = windowWidth <= 820 || ('ontouchstart' in window);
 
+        // Mobile Portrait detection
+        const isMobilePortrait = isMobile && (windowWidth < windowHeight);
+
+        // Dynamic base logical resolution
+        let baseWidth = 800;
+        let baseHeight = 480;
+
+        if (isMobilePortrait) {
+            // Change aspect ratio to roughly 9:8 (540x480) for larger rendering on vertical mobile screens
+            baseWidth = 540;
+            baseHeight = 480;
+        }
+
+        const aspectRatio = baseWidth / baseHeight;
+
+        // Dynamically update canvas logical size (drawing resolution) if changed
+        if (this.canvas.width !== baseWidth || this.canvas.height !== baseHeight) {
+            this.canvas.width = baseWidth;
+            this.canvas.height = baseHeight;
+        }
+
         let targetWidth, targetHeight;
 
-        if (isMobile) {
+        if (isFullscreen) {
+            // Fullscreen scaling: expand wrapper to screen boundaries preserving aspect ratio
+            targetWidth = windowWidth;
+            targetHeight = targetWidth / aspectRatio;
+            
+            if (targetHeight > windowHeight) {
+                targetHeight = windowHeight;
+                targetWidth = targetHeight * aspectRatio;
+            }
+        } else if (isMobile) {
             const isLandscape = windowWidth > windowHeight;
             
             if (isLandscape) {
@@ -1930,8 +1958,8 @@ class GameEngine {
                 targetWidth = Math.min(baseWidth, maxWidth);
                 targetHeight = targetWidth / aspectRatio;
                 
-                // Set boundary to ensure touch controls below fit on portrait screens
-                const maxHeight = windowHeight * 0.5; // limit canvas height to 50%
+                // Ensure touch controls below fit on portrait screens
+                const maxHeight = windowHeight * 0.45; // limit canvas height to 45% of viewport
                 if (targetHeight > maxHeight) {
                     targetHeight = maxHeight;
                     targetWidth = targetHeight * aspectRatio;
@@ -2000,12 +2028,12 @@ class GameEngine {
 
     drawBackground() {
         // Sky Gradient
-        const skyGrad = this.ctx.createLinearGradient(0, 0, 0, 480);
+        const skyGrad = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
         skyGrad.addColorStop(0, '#5c94fc'); // bright blue
         skyGrad.addColorStop(0.7, '#b8fcff'); // light turquoise
         skyGrad.addColorStop(1, '#ffc6ff'); // soft peach sunrise look
         this.ctx.fillStyle = skyGrad;
-        this.ctx.fillRect(0, 0, 800, 480);
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         // Draw Parallax clouds
         this.ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
@@ -2029,16 +2057,16 @@ class GameEngine {
         this.ctx.beginPath();
         for (let i = 0; i < 4; i++) {
             const mx = (i * 400 - this.cameraX * 0.25) % 1600;
-            this.ctx.moveTo(mx, 480);
+            this.ctx.moveTo(mx, this.canvas.height);
             this.ctx.lineTo(mx + 200, 300);
-            this.ctx.lineTo(mx + 400, 480);
+            this.ctx.lineTo(mx + 400, this.canvas.height);
         }
         this.ctx.fill();
     }
 
     drawLevelGrid() {
         const startX = Math.floor(this.cameraX / TILE_SIZE);
-        const endX = startX + Math.ceil(800 / TILE_SIZE) + 1;
+        const endX = startX + Math.ceil(this.canvas.width / TILE_SIZE) + 1;
 
         for (let row = 0; row < LEVEL_HEIGHT; row++) {
             for (let col = startX; col <= endX; col++) {
