@@ -473,18 +473,18 @@ body {
     color: #fff;
 }
 
-.action-btn-a {
-    background-color: rgba(0, 240, 255, 0.2);
-    border-color: rgba(0, 240, 255, 0.35);
-    color: rgba(0, 240, 255, 0.7);
-    transform: translateY(-50%); /* Shift A button upwards by half its diameter relative to X button */
+.action-buttons .action-btn-a {
+    background-color: rgba(0, 240, 255, 0.2) !important;
+    border-color: rgba(0, 240, 255, 0.35) !important;
+    color: rgba(0, 240, 255, 0.7) !important;
+    transform: translateY(-50%) !important; /* Shift A button upwards by half its diameter relative to X button */
 }
 
-.action-btn-a:active {
-    background-color: rgba(0, 240, 255, 0.4);
-    border-color: var(--neon-blue);
-    color: #fff;
-    transform: translateY(-50%) scale(0.92); /* Retain vertical shift while applying active scaling */
+.action-buttons .action-btn-a:active {
+    background-color: rgba(0, 240, 255, 0.4) !important;
+    border-color: var(--neon-blue) !important;
+    color: #fff !important;
+    transform: translateY(-50%) scale(0.92) !important; /* Retain vertical shift while applying active scaling */
 }
 
 /* Footer */
