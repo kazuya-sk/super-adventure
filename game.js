@@ -1359,6 +1359,14 @@ class GameEngine {
         // Dynamic cloud/bush parallax backgrounds
         this.clouds = [];
         this.initParallaxAssets();
+
+        // Touch buttons position configuration (stored in percentages to preserve scalability)
+        this.buttonPositions = {
+            dpadX: 2,    // % left
+            dpadY: 4,    // % bottom
+            actionX: 2,  // % right
+            actionY: 4   // % bottom
+        };
     }
 
     initParallaxAssets() {
@@ -1433,6 +1441,9 @@ class GameEngine {
         this.resizeGame();
         window.addEventListener('resize', () => this.resizeGame());
         window.addEventListener('orientationchange', () => this.resizeGame());
+        
+        // Initialize customizable button drag controls
+        this.initButtonDraggables();
         
         // Fullscreen orientation lock handling (locks mobile device to landscape)
         const lockOrientation = () => {
@@ -1909,6 +1920,39 @@ class GameEngine {
                 }
             });
         }
+
+        // Customize Button (Enter Customization Mode)
+        const customizeBtn = document.getElementById('customize-btn');
+        if (customizeBtn) {
+            customizeBtn.addEventListener('click', () => {
+                const wrapper = document.getElementById('game-wrapper');
+                if (wrapper) wrapper.classList.add('customizing');
+                
+                this.showOverlay('customize-overlay');
+                this.gameState = 'customize';
+                
+                // Show touch controls in customization mode even on desktop for testing
+                const controls = document.getElementById('touch-controls');
+                if (controls) controls.style.display = 'block';
+            });
+        }
+
+        // Save Customization Button (Exit and save)
+        const saveCustomizeBtn = document.getElementById('save-customize-btn');
+        if (saveCustomizeBtn) {
+            saveCustomizeBtn.addEventListener('click', () => {
+                const wrapper = document.getElementById('game-wrapper');
+                if (wrapper) wrapper.classList.remove('customizing');
+                
+                this.saveButtonPositions();
+                this.showOverlay('start-screen');
+                this.gameState = 'start';
+                
+                // Return touch controls display to CSS media query control
+                const controls = document.getElementById('touch-controls');
+                if (controls) controls.style.display = '';
+            });
+        }
     }
 
     resizeGame() {
@@ -1994,6 +2038,141 @@ class GameEngine {
         // Update the custom game-scale CSS variable based on calculated width / base width
         const scale = targetWidth / baseWidth;
         document.documentElement.style.setProperty('--game-scale', scale);
+
+        // Re-apply touch button positions in percentage relative to wrapper size
+        this.applyButtonPositions();
+    }
+
+    initButtonDraggables() {
+        const wrapper = document.getElementById('game-wrapper');
+        const dpad = document.querySelector('.dpad');
+        const actionBtn = document.querySelector('.action-buttons');
+        
+        if (!wrapper || !dpad || !actionBtn) return;
+
+        // Load persisted coordinates
+        this.loadButtonPositions();
+
+        const setupDrag = (element, isLeftAligned) => {
+            let active = false;
+            let startX = 0;
+            let startY = 0;
+            let initialOffsetValX = 0;
+            let initialOffsetValY = 0;
+
+            const dragStart = (e) => {
+                if (this.gameState !== 'customize') return;
+                
+                const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+
+                active = true;
+                
+                const rect = wrapper.getBoundingClientRect();
+                const elemRect = element.getBoundingClientRect();
+
+                if (isLeftAligned) {
+                    initialOffsetValX = elemRect.left - rect.left;
+                } else {
+                    initialOffsetValX = rect.right - elemRect.right;
+                }
+                initialOffsetValY = rect.bottom - elemRect.bottom;
+
+                startX = clientX;
+                startY = clientY;
+
+                e.preventDefault();
+            };
+
+            const drag = (e) => {
+                if (!active || this.gameState !== 'customize') return;
+
+                const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+                const dx = clientX - startX;
+                const dy = clientY - startY;
+
+                const rect = wrapper.getBoundingClientRect();
+
+                let newPxX, newPxY;
+                if (isLeftAligned) {
+                    newPxX = initialOffsetValX + dx;
+                } else {
+                    newPxX = initialOffsetValX - dx;
+                }
+                newPxY = initialOffsetValY - dy;
+
+                // Convert pixels to wrapper size percentage
+                let percentX = (newPxX / rect.width) * 100;
+                let percentY = (newPxY / rect.height) * 100;
+
+                // Constrain drag boundaries inside the screen
+                percentX = Math.max(0, Math.min(45, percentX)); // limit width to 45% of wrapper
+                percentY = Math.max(0, Math.min(75, percentY)); // limit height to 75% of wrapper
+
+                // Apply style coordinates
+                if (isLeftAligned) {
+                    element.style.left = `${percentX}%`;
+                    this.buttonPositions.dpadX = percentX;
+                } else {
+                    element.style.right = `${percentX}%`;
+                    this.buttonPositions.actionX = percentX;
+                }
+                element.style.bottom = `${percentY}%`;
+                if (isLeftAligned) {
+                    this.buttonPositions.dpadY = percentY;
+                } else {
+                    this.buttonPositions.actionY = percentY;
+                }
+
+                e.preventDefault();
+            };
+
+            const dragEnd = () => {
+                active = false;
+            };
+
+            // Touch events
+            element.addEventListener('touchstart', dragStart, { passive: false });
+            window.addEventListener('touchmove', drag, { passive: false });
+            window.addEventListener('touchend', dragEnd);
+
+            // Mouse events
+            element.addEventListener('mousedown', dragStart);
+            window.addEventListener('mousemove', drag);
+            window.addEventListener('mouseup', dragEnd);
+        };
+
+        setupDrag(dpad, true); // Left-aligned (D-pad)
+        setupDrag(actionBtn, false); // Right-aligned (Action buttons)
+    }
+
+    saveButtonPositions() {
+        localStorage.setItem('sa_btn_config', JSON.stringify(this.buttonPositions));
+    }
+
+    loadButtonPositions() {
+        const saved = localStorage.getItem('sa_btn_config');
+        if (saved) {
+            try {
+                this.buttonPositions = JSON.parse(saved);
+                this.applyButtonPositions();
+            } catch (e) {
+                console.error("Failed to load button positions", e);
+            }
+        }
+    }
+
+    applyButtonPositions() {
+        const dpad = document.querySelector('.dpad');
+        const actionBtn = document.querySelector('.action-buttons');
+        if (dpad && actionBtn) {
+            dpad.style.left = `${this.buttonPositions.dpadX}%`;
+            dpad.style.bottom = `${this.buttonPositions.dpadY}%`;
+            actionBtn.style.right = `${this.buttonPositions.actionX}%`;
+            actionBtn.style.bottom = `${this.buttonPositions.actionY}%`;
+        }
     }
 
     // ==========================================

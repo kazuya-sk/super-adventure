@@ -54,11 +54,14 @@
                         <div class="guide-grid">
                             <div>移動:</div><div>← / → または A / D</div>
                             <div>ジャンプ:</div><div>スペース / Z (長押しで高くジャンプ)</div>
-                            <div>ダッシュ / ファイア発射:</div><div>シフト / X (ファイア状態のみ)</div>
+                            <div>ダッシュ / ファイア発発射:</div><div>シフト / X (ファイア状態のみ)</div>
                             <div>一時停止:</div><div>P または ESC</div>
                         </div>
                     </div>
-                    <button id="start-btn" class="arcade-btn">スタート！</button>
+                    <div style="display: flex; gap: 15px; justify-content: center;">
+                        <button id="start-btn" class="arcade-btn">スタート！</button>
+                        <button id="customize-btn" class="arcade-btn btn-grey">ボタン位置調整</button>
+                    </div>
                 </div>
             </div>
 
@@ -107,6 +110,15 @@
                     <h2>ポーズ中</h2>
                     <p class="description">ゲームは一時停止されています</p>
                     <button id="resume-btn" class="arcade-btn">再開する</button>
+                </div>
+            </div>
+
+            <!-- Customize Controls Overlay -->
+            <div id="customize-overlay" class="overlay">
+                <div class="overlay-content">
+                    <h2 class="neon-text">位置調整モード</h2>
+                    <p class="description">ボタン（かたまり）をドラッグして、好きな位置に移動してください。</p>
+                    <button id="save-customize-btn" class="arcade-btn">保存して戻る</button>
                 </div>
             </div>
 

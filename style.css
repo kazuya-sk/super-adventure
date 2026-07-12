@@ -517,3 +517,59 @@ body {
             0 0 50px var(--neon-pink);
     }
 }
+
+/* Customize Control Button on Start Screen */
+#customize-btn {
+    display: none; /* Hidden on desktop by default */
+}
+
+@media (pointer: coarse), (max-width: 820px) {
+    #customize-btn {
+        display: inline-block;
+    }
+}
+
+/* Customize controls overlay settings */
+#customize-overlay {
+    background-color: rgba(10, 10, 18, 0.4) !important; /* Lighter background so player sees the game screen clearly */
+    backdrop-filter: none !important; /* No blur to ensure drag clarity */
+    -webkit-backdrop-filter: none !important;
+    align-items: flex-start; /* Place info panel at the top */
+    padding-top: calc(20px * var(--game-scale, 1));
+}
+
+#customize-overlay .overlay-content {
+    max-width: calc(340px * var(--game-scale, 1));
+    padding: calc(15px * var(--game-scale, 1)) calc(20px * var(--game-scale, 1));
+    margin-top: calc(10px * var(--game-scale, 1));
+    background: rgba(22, 22, 37, 0.95);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.6), 0 0 10px var(--neon-blue);
+}
+
+/* Visual states while customizing */
+.customizing .dpad, .customizing .action-buttons {
+    border: 2px dashed var(--neon-blue);
+    background-color: rgba(0, 240, 255, 0.08);
+    border-radius: 8px;
+    padding: 6px;
+    margin: -8px; /* Offset padding to avoid visual shifts */
+    cursor: move;
+    animation: customize-pulse 1.5s infinite alternate;
+}
+
+.customizing .touch-btn {
+    pointer-events: none; /* Let pointer drag the parent containers instead of triggering keys */
+    background-color: rgba(22, 22, 37, 0.65) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+@keyframes customize-pulse {
+    from {
+        box-shadow: 0 0 4px rgba(0, 240, 255, 0.2);
+        border-color: rgba(0, 240, 255, 0.4);
+    }
+    to {
+        box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+        border-color: var(--neon-blue);
+    }
+}
