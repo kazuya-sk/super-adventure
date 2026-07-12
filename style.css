@@ -375,74 +375,33 @@ body {
     color: var(--neon-blue);
 }
 
-/* Touch Controls */
+/* Touch Controls (Overlay inside #game-wrapper) */
 #touch-controls {
     display: none; /* Hidden by default on desktop */
+    position: absolute;
+    left: 0;
+    top: 0;
     width: 100%;
-    max-width: 800px;
-    justify-content: space-between;
-    padding: 15px 10px;
-    margin-top: 10px;
+    height: 100%;
+    pointer-events: none; /* Let canvas handle pointer clicks underneath */
+    z-index: 21; /* Overlay on top of canvas/overlays but below custom screens if needed */
     box-sizing: border-box;
 }
 
 /* Show touch controls on mobile or touch pointer devices */
 @media (pointer: coarse), (max-width: 820px) {
     #touch-controls {
-        display: flex;
+        display: block; /* Display block to position child elements absolute */
     }
     
     #game-wrapper {
-        width: 100%;
+        width: 95vw;
         height: auto;
         aspect-ratio: 5 / 3;
     }
 
-    /* Portrait (Vertical orientation) */
-    @media (orientation: portrait) {
-        #touch-controls {
-            display: flex;
-            position: static;
-            width: 100%;
-            justify-content: space-between;
-            margin-top: 20px;
-            padding: 0 15px;
-        }
-    }
-
-    /* Landscape (Horizontal orientation) */
+    /* Hide desktop options, header and footer on mobile Landscape for maximum screen space */
     @media (orientation: landscape) {
-        #touch-controls {
-            display: flex;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none; /* Let canvas handle pointer clicks underneath */
-            z-index: 30; /* Keep overlay buttons on top */
-            padding: 0;
-            margin: 0;
-            justify-content: space-between;
-            align-items: flex-end;
-            box-sizing: border-box;
-        }
-
-        .dpad {
-            pointer-events: auto; /* Re-enable pointer events for controls */
-            position: absolute;
-            left: 6vw;
-            bottom: 8vh;
-        }
-
-        .action-buttons {
-            pointer-events: auto; /* Re-enable pointer events for controls */
-            position: absolute;
-            right: 6vw;
-            bottom: 8vh;
-        }
-
-        /* Hide desktop options, header and footer on Landscape mobile for maximum view size */
         .game-header, .game-footer, .options-bar {
             display: none !important;
         }
@@ -455,78 +414,75 @@ body {
     }
 }
 
-.dpad, .action-buttons {
+.dpad {
+    position: absolute;
+    left: calc(15px * var(--game-scale, 1));
+    bottom: calc(15px * var(--game-scale, 1));
     display: flex;
-    gap: 15px;
+    gap: calc(12px * var(--game-scale, 1));
+    pointer-events: auto; /* Re-enable pointer events for controls */
+}
+
+.action-buttons {
+    position: absolute;
+    right: calc(15px * var(--game-scale, 1));
+    bottom: calc(15px * var(--game-scale, 1));
+    display: flex;
+    gap: calc(12px * var(--game-scale, 1));
+    pointer-events: auto; /* Re-enable pointer events for controls */
 }
 
 .touch-btn {
     width: calc(65px * var(--game-scale, 1));
     height: calc(65px * var(--game-scale, 1));
-    min-width: 50px;
-    min-height: 50px;
-    max-width: 85px;
-    max-height: 85px;
+    min-width: 45px;
+    min-height: 45px;
+    max-width: 90px;
+    max-height: 90px;
     border-radius: 50%;
-    background-color: rgba(22, 22, 37, 0.75);
-    border: calc(2px * var(--game-scale, 1)) solid var(--border-color);
-    color: #fff;
-    font-size: calc(1.2rem * var(--game-scale, 1));
+    background-color: rgba(22, 22, 37, 0.4); /* Subtly transparent overlay */
+    border: calc(1.5px * var(--game-scale, 1)) solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: calc(1.1rem * var(--game-scale, 1));
     font-weight: bold;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 calc(4px * var(--game-scale, 1)) calc(8px * var(--game-scale, 1)) rgba(0, 0, 0, 0.25);
     touch-action: manipulation;
-    transition: background-color 0.1s, border-color 0.1s, transform 0.1s;
+    transition: background-color 0.1s, border-color 0.1s, transform 0.1s, color 0.1s;
 }
 
 .touch-btn:active {
-    background-color: rgba(0, 240, 255, 0.3);
-    border-color: var(--neon-blue);
+    background-color: rgba(0, 240, 255, 0.25);
+    border-color: rgba(0, 240, 255, 0.5);
+    color: #fff;
     transform: scale(0.92);
-}
-
-/* Enhancements specifically for touch screens in landscape */
-@media (pointer: coarse) and (orientation: landscape) {
-    .touch-btn {
-        width: 75px;
-        height: 75px;
-        font-size: 1.4rem;
-        background-color: rgba(22, 22, 37, 0.45); /* More see-through */
-        border: 2px solid rgba(255, 255, 255, 0.25);
-    }
-    .action-btn-x {
-        background-color: rgba(255, 0, 127, 0.3);
-        border-color: rgba(255, 0, 127, 0.4);
-    }
-    .action-btn-a {
-        background-color: rgba(0, 240, 255, 0.3);
-        border-color: rgba(0, 240, 255, 0.4);
-    }
 }
 
 .action-btn-x {
     background-color: rgba(255, 0, 127, 0.2);
-    border-color: rgba(255, 0, 127, 0.5);
-    color: var(--neon-pink);
+    border-color: rgba(255, 0, 127, 0.35);
+    color: rgba(255, 0, 127, 0.7);
 }
 
 .action-btn-x:active {
     background-color: rgba(255, 0, 127, 0.4);
     border-color: var(--neon-pink);
+    color: #fff;
 }
 
 .action-btn-a {
     background-color: rgba(0, 240, 255, 0.2);
-    border-color: rgba(0, 240, 255, 0.5);
-    color: var(--neon-blue);
+    border-color: rgba(0, 240, 255, 0.35);
+    color: rgba(0, 240, 255, 0.7);
 }
 
 .action-btn-a:active {
     background-color: rgba(0, 240, 255, 0.4);
     border-color: var(--neon-blue);
+    color: #fff;
 }
 
 /* Footer */

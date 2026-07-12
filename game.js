@@ -1434,6 +1434,24 @@ class GameEngine {
         window.addEventListener('resize', () => this.resizeGame());
         window.addEventListener('orientationchange', () => this.resizeGame());
         
+        // Fullscreen orientation lock handling (locks mobile device to landscape)
+        const lockOrientation = () => {
+            const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+            if (isFullscreen) {
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch(err => {
+                        console.log("Orientation lock failed:", err);
+                    });
+                }
+            } else {
+                if (screen.orientation && screen.orientation.unlock) {
+                    screen.orientation.unlock();
+                }
+            }
+        };
+        document.addEventListener('fullscreenchange', lockOrientation);
+        document.addEventListener('webkitfullscreenchange', lockOrientation);
+        
         // Game Loop parameters
         let lastTime = 0;
         const tickRate = 1000 / 60; // Fixed 60fps update
@@ -1906,19 +1924,9 @@ class GameEngine {
         // Detect if mobile (touch-enabled or narrow viewport)
         const isMobile = windowWidth <= 820 || ('ontouchstart' in window);
 
-        // Mobile Portrait detection
-        const isMobilePortrait = isMobile && (windowWidth < windowHeight);
-
-        // Dynamic base logical resolution
-        let baseWidth = 800;
-        let baseHeight = 480;
-
-        if (isMobilePortrait) {
-            // Change aspect ratio to roughly 9:8 (540x480) for larger rendering on vertical mobile screens
-            baseWidth = 540;
-            baseHeight = 480;
-        }
-
+        // Base logical resolution (always unified to 800x480 to keep standard aspect ratio)
+        const baseWidth = 800;
+        const baseHeight = 480;
         const aspectRatio = baseWidth / baseHeight;
 
         // Dynamically update canvas logical size (drawing resolution) if changed
@@ -1958,8 +1966,8 @@ class GameEngine {
                 targetWidth = Math.min(baseWidth, maxWidth);
                 targetHeight = targetWidth / aspectRatio;
                 
-                // Ensure touch controls below fit on portrait screens
-                const maxHeight = windowHeight * 0.45; // limit canvas height to 45% of viewport
+                // Relaxed vertical height limit since controls are now overlaid transparently
+                const maxHeight = windowHeight * 0.85; 
                 if (targetHeight > maxHeight) {
                     targetHeight = maxHeight;
                     targetWidth = targetHeight * aspectRatio;
