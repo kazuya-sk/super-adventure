@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>スーパーアドベンチャー | レトロ横スクロールアクション</title>
+    <!-- Google Fonts for Retro and Modern Clean Aesthetics -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app-container">
+        <!-- Arcade Bezel Title -->
+        <header class="game-header">
+            <h1 class="game-title">SUPER ADVENTURE</h1>
+            <p class="game-subtitle">スーパーアドベンチャー</p>
+        </header>
+
+        <!-- Main Game Area -->
+        <div id="game-wrapper">
+            <!-- HUD (Heads Up Display) -->
+            <div id="hud">
+                <div class="hud-item">
+                    <div class="hud-label">プレイヤー</div>
+                    <div id="hud-score" class="hud-value">000000</div>
+                </div>
+                <div class="hud-item">
+                    <div class="hud-label">コイン</div>
+                    <div id="hud-coins" class="hud-value">🪙 x00</div>
+                </div>
+                <div class="hud-item">
+                    <div class="hud-label">のこり時間</div>
+                    <div id="hud-time" class="hud-value">400</div>
+                </div>
+                <div class="hud-item">
+                    <div class="hud-label">のこり数</div>
+                    <div id="hud-lives" class="hud-value">❤️ x3</div>
+                </div>
+            </div>
+
+            <!-- Game Canvas -->
+            <canvas id="game-canvas" width="800" height="480"></canvas>
+
+            <!-- Screen Overlays -->
+            <!-- Start Screen -->
+            <div id="start-screen" class="overlay active">
+                <div class="overlay-content">
+                    <h2 class="neon-text">冒険を始めよう</h2>
+                    <p class="description">レトロスタイルのマリオ風アクションゲームへようこそ！</p>
+                    <div class="control-guide">
+                        <h3>【操作説明】</h3>
+                        <div class="guide-grid">
+                            <div>移動:</div><div>← / → または A / D</div>
+                            <div>ジャンプ:</div><div>スペース / Z (長押しで高くジャンプ)</div>
+                            <div>ダッシュ / ファイア発射:</div><div>シフト / X (ファイア状態のみ)</div>
+                            <div>一時停止:</div><div>P または ESC</div>
+                        </div>
+                    </div>
+                    <button id="start-btn" class="arcade-btn">スタート！</button>
+                </div>
+            </div>
+
+            <!-- Miss Screen -->
+            <div id="miss-screen" class="overlay">
+                <div class="overlay-content">
+                    <h2 class="neon-text text-red">ミス！</h2>
+                    <p id="miss-msg">やられてしまった！</p>
+                    <p class="description" id="miss-lives" style="font-family: var(--font-retro); font-size: 1.1rem; margin-top: 15px; color: var(--neon-pink);"></p>
+                </div>
+            </div>
+
+            <!-- Game Over Screen -->
+            <div id="gameover-screen" class="overlay">
+                <div class="overlay-content">
+                    <h2 class="neon-text text-red">ゲームオーバー</h2>
+                    <p id="gameover-msg">力尽きてしまった！</p>
+                    <div class="score-breakdown">
+                        <p>到達ステージ: ステージ <span id="gameover-level">1</span></p>
+                        <p>最終スコア: <span id="gameover-score">0</span> 点</p>
+                        <p>獲得コイン: <span id="gameover-coins">0</span> 枚</p>
+                    </div>
+                    <div style="display: flex; gap: 15px; justify-content: center;">
+                        <button id="restart-btn" class="arcade-btn btn-red">もう一度挑戦</button>
+                        <button id="quit-btn" class="arcade-btn btn-grey">冒険をやめる</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Victory Screen -->
+            <div id="victory-screen" class="overlay">
+                <div class="overlay-content">
+                    <h2 class="neon-text text-gold">ステージクリア！</h2>
+                    <p class="description">おめでとうございます！ステージを攻略しました！</p>
+                    <div class="score-breakdown">
+                        <p>クリア残り時間ボーナス: <span id="time-bonus">0</span>点</p>
+                        <p>最終スコア: <span id="final-score">0</span>点</p>
+                    </div>
+                    <button id="next-level-btn" class="arcade-btn btn-gold">もう一度遊ぶ</button>
+                </div>
+            </div>
+
+            <!-- Pause Screen -->
+            <div id="pause-screen" class="overlay">
+                <div class="overlay-content">
+                    <h2>ポーズ中</h2>
+                    <p class="description">ゲームは一時停止されています</p>
+                    <button id="resume-btn" class="arcade-btn">再開する</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Extra controls and Mute button -->
+        <div class="options-bar">
+            <button id="mute-btn" class="option-btn">🔊 音楽: オン</button>
+            <button id="fullscreen-btn" class="option-btn">📺 全画面で遊ぶ</button>
+            <button id="pause-btn" class="option-btn">⏸️ 一時停止</button>
+        </div>
+
+        <!-- Mobile Touch Controls (Visually stunning buttons for touch screens) -->
+        <div id="touch-controls">
+            <div class="dpad">
+                <button id="touch-left" class="touch-btn">◀</button>
+                <button id="touch-right" class="touch-btn">▶</button>
+            </div>
+            <div class="action-buttons">
+                <button id="touch-fire" class="touch-btn action-btn-x">X</button>
+                <button id="touch-jump" class="touch-btn action-btn-a">A</button>
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <footer class="game-footer">
+            <p>※キーボード、またはタッチスクリーンで操作できます。</p>
+            <p class="copyright">&copy; 2026 SUPER ADVENTURE</p>
+        </footer>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
